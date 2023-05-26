@@ -1,8 +1,8 @@
 package com.example.timedelta.Datos
 
 import kotlinx.datetime.LocalDateTime
-
-@kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializable
+@Serializable
 data class Usuario(
     val idusuario:Int?=0,
     val nombreusuario:String?="",

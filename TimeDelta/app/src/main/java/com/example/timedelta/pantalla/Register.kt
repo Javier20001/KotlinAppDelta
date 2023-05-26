@@ -2,6 +2,7 @@ package com.example.timedelta.pantalla
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 
 import android.view.MotionEvent
 import androidx.annotation.RequiresApi
@@ -40,6 +41,8 @@ import kotlinx.datetime.*
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
 fun Register(navController: NavController, context: Context, lifecycleScope: LifecycleCoroutineScope){
@@ -87,7 +90,6 @@ private fun register(email:String,
                      context: Context,
                      lifecycleScope: LifecycleCoroutineScope){
     lifecycleScope.launch {
-        //probla en el agragar, no altera los id
         var inicioPrueba:LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
         var finalPrueba : LocalDateTime = LocalDateTime.parse(java.time.LocalDateTime.now().plusDays(5).toString())
 
@@ -103,13 +105,18 @@ private fun register(email:String,
         val supabaseResponse=UsuarioDao().getCliente().postgrest["usuario"].select {
             eq("mailusuario",email)
         }
-        val usuarioSelect = supabaseResponse.decodeSingle<Usuario>()
-        if(usuarioSelect==null){
+
+
+        Log.e("Respuesta",supabaseResponse.toString())
+
+
+        if(supabaseResponse.body.toString().equals("[]")){
             val respuesta = UsuarioDao().getCliente().postgrest["usuario"].insert(usuario, returning = Returning.REPRESENTATION)
             if(respuesta!=null){
-                navController.navigate(AppScreams.PantallaPrincipal.ruta)
+                    val jsonUsario = Json.encodeToString(usuario)
+                    navController.navigate(AppScreams.PantallaPrincipal.ruta+"/"+jsonUsario)
             }else{
-                popUpAlert(context,"uno de los datos es incorrecto")
+                    popUpAlert(context,"uno de los datos es incorrecto")
             }
         }else{
             popUpAlert(context,"Este mail ya esta registrado")
@@ -122,7 +129,6 @@ private fun register(email:String,
 @Composable
 private fun inputText(variable: MutableState<String>,titulo:String){
     val clickCount = remember { mutableStateOf(0) }
-    //var passwordVisible =  remember { mutableStateOf(false) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -149,13 +155,6 @@ private fun inputText(variable: MutableState<String>,titulo:String){
             //visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation()
             )
         }
-        /*este boton permite que se altere el estado para que se muestre la contraseña
-        Button(
-            onClick = { passwordVisible.value = !passwordVisible.value},
-            modifier = Modifier.padding(start = 8.dp)
-        ) {
-            Text(if (passwordVisible.value) "Hide" else "Show")
-        }*/
 
     if(variable.value=="" && clickCount.value!=0){
         Text(text = "Campo necesario",

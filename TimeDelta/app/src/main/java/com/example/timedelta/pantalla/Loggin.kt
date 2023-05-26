@@ -1,36 +1,30 @@
 package com.example.timedelta.pantalla
 
-import android.app.AlertDialog
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.navigation.NavController
-import com.example.timedelta.navegacion.AppScreams
-
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.timedelta.Datos.Usuario
 import com.example.timedelta.dao.UsuarioDao
-import io.github.jan.supabase.SupabaseClient
+import com.example.timedelta.navegacion.AppScreams
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 
 @Composable
@@ -88,19 +82,12 @@ private fun iniciarSeccion(email : String , contraseña : String
         }
         val usuario = supabaseResponse.decodeSingle<Usuario>()
         if(usuario!=null){
-            navController.navigate(AppScreams.PantallaPrincipal.ruta)
+            val jsonUsario = Json.encodeToString(usuario)
+            navController.navigate(AppScreams.PantallaPrincipal.ruta+"/"+jsonUsario)
         }else{
             popUpAlert(context,"uno de los datos es incorrecto")
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun testLoggin(){
-    val navControler = rememberNavController()
-    val context = LocalContext.current
-    //loggin(navController = navControler, context = context)
 }
 
 
