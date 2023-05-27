@@ -12,17 +12,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.timedelta.Datos.Usuario
 import com.example.timedelta.dao.UsuarioDao
 import com.example.timedelta.navegacion.AppScreams
 import io.github.jan.supabase.postgrest.postgrest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -34,12 +33,12 @@ fun loggin(navController: NavController , context: Context , lifecycleScope: Lif
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        bodyLoggin(navController = navController, context , lifecycleScope)
+        bodyLoggin(navController = navController, context )
     }
 }
 
 @Composable
-fun bodyLoggin(navController: NavController ,  context: Context , lifecycleScope: LifecycleCoroutineScope){
+fun bodyLoggin(navController: NavController ,  context: Context){
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -57,37 +56,41 @@ fun bodyLoggin(navController: NavController ,  context: Context , lifecycleScope
             visualTransformation = PasswordVisualTransformation()
         )
 
-        Button(onClick = { register( navController,context, lifecycleScope) }) {
+        Button(onClick = { register( navController,context) }) {
             Text(text = "Registrate")
         }
 
-        Button(onClick = { iniciarSeccion(email.value , contaseña.value , navController,context,lifecycleScope ) }) {
+        Button(onClick = { iniciarSeccion(email.value , contaseña.value , navController,context) }) {
             Text(text = "iniciar sesion")
         }
     }
 }
 
-private fun register(navController: NavController ,context: Context , lifecycleScope: LifecycleCoroutineScope){
+private fun register(navController: NavController ,context: Context){
     navController.navigate(AppScreams.Register.ruta)
 }
 
+
 private fun iniciarSeccion(email : String , contraseña : String
                    , navController: NavController
-                   ,context: Context
-                   ,lifecycleScope: LifecycleCoroutineScope){
-    lifecycleScope.launch {
-        val supabaseResponse=UsuarioDao().getCliente().postgrest["usuario"].select {
-            eq("mailusuario",email)
-            eq("contraseñausuario",contraseña)
+                   ,context: Context){
+    runBlocking {
+        val supabaseResponse = withContext(Dispatchers.IO) {
+            UsuarioDao().getCliente().postgrest["usuario"].select {
+                eq("mailusuario", email)
+                eq("contraseñausuario", contraseña)
+            }
         }
         val usuario = supabaseResponse.decodeSingle<Usuario>()
-        if(usuario!=null){
-            val jsonUsario = Json.encodeToString(usuario)
-            navController.navigate(AppScreams.PantallaPrincipal.ruta+"/"+jsonUsario)
-        }else{
-            popUpAlert(context,"uno de los datos es incorrecto")
+
+        if (usuario != null) {
+            val jsonUsuario = Json.encodeToString(usuario)
+            navController.navigate(AppScreams.PantallaPrincipal.ruta + "/" + jsonUsuario)
+        } else {
+            withContext(Dispatchers.Main) {
+                popUpAlert(context, "Uno de los datos es incorrecto")
+            }
         }
     }
 }
-
 

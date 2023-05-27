@@ -36,7 +36,10 @@ import com.example.timedelta.dao.UsuarioDao
 import com.example.timedelta.navegacion.AppScreams
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Returning
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.*
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -52,13 +55,13 @@ fun Register(navController: NavController, context: Context, lifecycleScope: Lif
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            bodyRegister(navController,context,lifecycleScope)
+            bodyRegister(navController,context)
         }
     }
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun bodyRegister(navController: NavController, context: Context, lifecycleScope: LifecycleCoroutineScope){
+fun bodyRegister(navController: NavController, context: Context){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -76,7 +79,7 @@ fun bodyRegister(navController: NavController, context: Context, lifecycleScope:
 
         inputText(variable = confirmacionContaseña, titulo = "Contraseña",)
 
-        Button(onClick = { register(email.value,contaseña.value,usuarionombre.value,navController,context,lifecycleScope)}) {
+        Button(onClick = { register(email.value,contaseña.value,usuarionombre.value,navController,context)}) {
             Text(text = "Registrate")
         }
     }
@@ -87,9 +90,8 @@ private fun register(email:String,
                      contraseña : String,
                      nombre : String,
                      navController: NavController,
-                     context: Context,
-                     lifecycleScope: LifecycleCoroutineScope){
-    lifecycleScope.launch {
+                     context: Context){
+    runBlocking {
         var inicioPrueba:LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
         var finalPrueba : LocalDateTime = LocalDateTime.parse(java.time.LocalDateTime.now().plusDays(5).toString())
 
@@ -106,17 +108,13 @@ private fun register(email:String,
             eq("mailusuario",email)
         }
 
-
-        Log.e("Respuesta",supabaseResponse.toString())
-
-
         if(supabaseResponse.body.toString().equals("[]")){
             val respuesta = UsuarioDao().getCliente().postgrest["usuario"].insert(usuario, returning = Returning.REPRESENTATION)
             if(respuesta!=null){
-                    val jsonUsario = Json.encodeToString(usuario)
-                    navController.navigate(AppScreams.PantallaPrincipal.ruta+"/"+jsonUsario)
+                val jsonUsario = Json.encodeToString(usuario)
+                navController.navigate(AppScreams.PantallaPrincipal.ruta+"/"+jsonUsario)
             }else{
-                    popUpAlert(context,"uno de los datos es incorrecto")
+                popUpAlert(context,"uno de los datos es incorrecto")
             }
         }else{
             popUpAlert(context,"Este mail ya esta registrado")
@@ -151,9 +149,7 @@ private fun inputText(variable: MutableState<String>,titulo:String){
                 }.fillMaxWidth(),
             textStyle = TextStyle(fontSize = 16.sp),
             visualTransformation = if(titulo.equals("Contraseña")) PasswordVisualTransformation() else VisualTransformation.None
-            //esta linea permite que se muestre la contraseña en base al valor de passwordVisible
-            //visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation()
-            )
+             )
         }
 
     if(variable.value=="" && clickCount.value!=0){

@@ -15,10 +15,9 @@ import com.example.timedelta.ui.theme.TimeDeltaTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //dentro de la logica del login vamos a meter los select y desde ahi la redireccion a las otras paginas
+
         setContent {
             TimeDeltaTheme {
                 // A surface container using the 'background' color from the theme
@@ -26,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    appNavegacion(context = this, lifecycleScope)
+                    appNavegacion(context = this@MainActivity, lifecycleScope)
                 }
             }
         }

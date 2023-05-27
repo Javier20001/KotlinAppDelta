@@ -1,5 +1,6 @@
 package com.example.timedelta.navegacion
 
+import android.app.Activity
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.LifecycleCoroutineScope
@@ -8,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.timedelta.Datos.Usuario
 import com.example.timedelta.pantalla.Register
 import com.example.timedelta.pantalla.loggin
 import com.example.timedelta.pantalla.pantallaESpera
