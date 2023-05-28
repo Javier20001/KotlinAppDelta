@@ -27,7 +27,7 @@ import com.example.timedelta.R
 fun pantallaESpera(navController: NavController){
     LaunchedEffect(key1 = 1){
         delay(1000)
-        navController.popBackStack()//evita qeu regreses a esta pantalla
+        navController.popBackStack()//evita que regreses a esta pantalla
         navController.navigate(AppScreams.Loggin.ruta)
     }
     bodyPantallaEspera()//llamamos al body mientra s se ejecuta lo de arriba

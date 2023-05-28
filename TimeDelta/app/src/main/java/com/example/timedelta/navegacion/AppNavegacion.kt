@@ -1,22 +1,21 @@
 package com.example.timedelta.navegacion
 
-import android.app.Activity
+
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.timedelta.pantalla.Register
-import com.example.timedelta.pantalla.loggin
+import com.example.timedelta.pantalla.Loggin
 import com.example.timedelta.pantalla.pantallaESpera
 
 import com.example.timedelta.pantalla.pantallaPrincipal
 
 @Composable
-fun appNavegacion(context: Context,lifecycleScope: LifecycleCoroutineScope){
+fun AppNavegacion(context: Context){
     val navControler = rememberNavController()
 
     NavHost(navController = navControler, startDestination = AppScreams.PantallaEspera.ruta){
@@ -24,7 +23,7 @@ fun appNavegacion(context: Context,lifecycleScope: LifecycleCoroutineScope){
             pantallaESpera(navController = navControler )
         }
         composable(route = AppScreams.Loggin.ruta){
-            loggin(navController = navControler, context = context,lifecycleScope)
+            Loggin(navController = navControler, context = context)
         }
         composable(route = AppScreams.PantallaPrincipal.ruta+"/{usuario}",
             arguments = listOf(navArgument(name = "usuario"){
@@ -33,7 +32,7 @@ fun appNavegacion(context: Context,lifecycleScope: LifecycleCoroutineScope){
                 pantallaPrincipal(navController = navControler,it.arguments?.getString("usuario"))
             }
         composable(route = AppScreams.Register.ruta){
-            Register(navController = navControler, context = context,lifecycleScope)
+            Register(navController = navControler, context = context)
         }
     }
 }

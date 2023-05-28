@@ -9,12 +9,10 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.timedelta.Datos.Usuario
 import com.example.timedelta.navegacion.AppScreams
-import com.example.timedelta.navegacion.appNavegacion
 import kotlinx.serialization.json.Json
 
 @Composable
